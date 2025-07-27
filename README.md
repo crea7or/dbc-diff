@@ -24,19 +24,19 @@ pip install -r requirements.txt
 
 ```bash
 python dbcdiff.py [OPTIONS]
-
-| Option                   | Description                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| `-f, --old, --from PATH` | Path to the old DBC file or folder (required).                                       |
-| `-t, --new, --to PATH`   | Path to the new DBC file or folder (required).                                       |
-| `-u, --unchanged`        | Include in the report DBCs that are not changed.                                     |
-| `-r, --reports TEXT`     | Comma-delimited list of report types to generate (e.g. `json,html,md`). **Required** |
-| `-i, --info TEXT`        | Additional information to display in the report (e.g. "Release 1.2 vs 1.3").         |
-| `-n, --name TEXT`        | Base name for the output report files (e.g., `diff_report` → `diff_report.json`).    |
-| `-o, --output PATH`      | Output folder where the generated reports will be saved.                             |
-| `--help`                 | Show help message and exit.                                                          |
-
 ```
+
+Option                   | Description
+------------------------ | -----------
+`-f, --old, --from PATH` | Path to the old DBC file or folder (required).
+`-t, --new, --to PATH`   | Path to the new DBC file or folder (required).
+`-u, --unchanged`        | Include in the report DBCs that are not changed.
+`-r, --reports TEXT`     | Comma-delimited list of report types to generate (e.g. `json,html,md`). **Required**
+`-i, --info TEXT`        | Additional information to display in the report (e.g. "Release 1.2 vs 1.3").
+`-n, --name TEXT`        | Base name for the output report files (e.g., `diff_report` → `diff_report.json`).
+`-o, --output PATH`      | Output folder where the generated reports will be saved.
+`--help`                 | Show help message and exit.
+
 
 Example:
 ```bash
