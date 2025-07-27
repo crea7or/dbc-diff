@@ -1,0 +1,372 @@
+<html lang="en">
+<head>
+  <title>{{ build_info }}</title>
+  <style>
+      body {
+          font-family: "Arial", serif;
+          font-size: 9pt;
+      }
+
+      .added {
+          background-color: lightgreen;
+      }
+
+      .changed {
+          background-color: orange;
+      }
+
+      .deleted {
+          background-color: lightcoral;
+      }
+
+      .dbc-name {
+          font-size: 14pt;
+          line-height: 24pt;
+          height: 24pt;
+      }
+
+      .container {
+          display: flex; /* Establishes a flex container */
+          flex-wrap: nowrap; /* Allows items to wrap to the next line */
+          /* gap: 3pt;  Optional: Adds space between items */
+          margin-bottom: 7px;
+      }
+
+      .box-table {
+          width: 100%;
+      }
+
+      .box-added {
+          min-width: 330px;
+          flex-grow: 0; /* Prevents the items from growing */
+          flex-shrink: 0; /* Prevents the items from shrinking */
+          text-align: center;
+          box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+          margin-right: 0pt;
+          margin-bottom: 3pt;
+          border-right: 1px dotted gray;
+          border-bottom: 1px dotted gray;
+      }
+
+      .box-deleted {
+          min-width: 330px;
+          flex-grow: 0; /* Prevents the items from growing */
+          flex-shrink: 0; /* Prevents the items from shrinking */
+          text-align: center;
+          box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+          margin-right: 0pt;
+          margin-bottom: 3pt;
+          border-right: 1px dotted gray;
+          border-bottom: 1px dotted gray;
+      }
+
+      .box-changed {
+          min-width: 330px;
+          flex-grow: 0; /* Prevents the items from growing */
+          flex-shrink: 0; /* Prevents the items from shrinking */
+          text-align: center;
+          box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+          margin-right: 0pt;
+          margin-bottom: 3pt;
+          border-right: 1px dotted gray;
+          border-bottom: 1px dotted gray;
+      }
+
+      td {
+          padding: 5pt;
+      }
+
+      tr:not(:last-child) th, tr:not(:last-child) td {
+          border-bottom: 1px solid #ddd; /* Adds bottom border to all cells except those in the last row */
+      }
+
+      .property-name {
+          font-weight: bold;
+          font-size: 11pt;
+      }
+
+      .property-value {
+          font-size: 11pt;
+      }
+
+      .header-properties {
+          font-weight: bold;
+          font-size: 11pt;
+          background-color: lightgray;
+      }
+
+      .header-item {
+          font-weight: bold;
+          font-size: 11pt;
+      }
+
+      .data-indent {
+          transition: height 0.3s ease-out; /* Smooth transition for collapsing/expanding */
+          margin-left: 24px;
+      }
+
+      img.added-icon {
+          content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAASBSURBVEhLjZZ9TFtVFMDP++rXgNECZShMDSwqsA2mY4wQdepYBtswBhezxbnoXyZm2T+LiRE7iouJ8R/nYqKYoIlmhumijk2Ni4jJdIqDUQdbcGAcztXx1VLo1+t713Mur4Wu7divSe/5eO+ce8+5774nwDIorgJHDNQqvLBcB72AbBLIEyJIQwozDQbd16f5hRnImEB02SsZ6AcYwE4AtsowL0Ggm704fiky+ajmnrxsOJJISVDWWiOOiiMuDP4KquYFK4BJUli2KVtjwCAQCUiqHltyrxDCdG/mxPLe8B8ZxTktkpzAlZONFx7HIE2kSoLImh/YITxT/hRUF62DAlsehgeYDE7BwA0PfHbpCzg1cgZ0thBTAPGkXXfunW4fCXMDkkhgby2VfOLk1xi8kfRKZ3m4Y+dRS23JRu7PxM/XfoWXzxyCAe8g1ylJjm5v8bf/xbNK3IpEtuhuDP4iydtKn1DP7vvKfJ/jXu67HSUri2Hv2t1w0euBq9NjaGEPRoWwBr2Rn8jPVyC6HOt0iPWhaCpzlE57XjrnsCpWct0xc5F5eKRze3wlIQmUDVrb1BWRNGzoQRxMoiBonz7dkTH48bHP4djwB1hz3bAskmVeAcca36YZU2msOmgHyC5Krvz8eFO3lzUEaoofIjEt7w6/D69ecMN8bN6wJFO3ugZ23c9biFlYs+IqzBUx0wZUnWR8ofq5ldyLMGNnLMUsmcEqW3CWyZtvKc9WthhOdlcMotVYIlZJqixK0apVaxN3CsJikFtLEtNjfExXKoxBsQyHXiHjv4NEi2xR7dZcE8lxrs2NQ0vPPgiocyDi7+/5cYhoEdh8eitfBZYBOuvfg1rn4lbOx2fFptjU2UjAjH4nbzKRbtkUIF2plgPvSdxEK5ghAWdm9oX9gKsglXNP1mro2/UjL4UoiLDlmx0w7LsCvzR9D7nm3IR9KVOhaQiqQYVkfOhukneYlKimyhe9f5CYwq1BZJHmlWon+m94NI3p/AHGBEOiBKbfUZwgQ9fQSRoyQvUPxcK8dJn4aOCTWUP0YtkHJb13Pig8Zq3AylWNTF2FpjXboCg7zemM2GQb1BfWQp1zU9Iui3N+vA9e63Fjc9GNh6beNtPFr5Jcees1UOmoUOpKNkHP891gkpM21LIEo0Go6Xg8NDRxmY6BMJZnI2vzXeK1Yr2h/3AVNpTqx2evw8jUKDTjEylhAe+EkBqC3Sf2s3Pj543mSkcweBfJiS7ZWWErLutbkqkXj3Y26v3/LhzBt+O3fy7A5g+3Rk//+R2vBsY4VczWuLkTSSqk4LLn4MF3AlfSQDq+cLSG0id9+6v2yA/fXb3CYcmVqcEzIT/ulsFwR//Hs2fHfsjDF46xa4RuHPawNn+AdCKlU6bXixRVCB3GRIdQ5UsmMFlYkUxYW0GIahELbsXE6xSJov2tLD3vcKB9TDNsnNStYCC5HOvxK+IgzhhPWsa/JlIRbmKAbmzoO7hjPIYxiYwJ4uBnSwF+ttAZXoGr4qctBpzBGQ/h2I8vlUmypQfgf0zks7oktFFwAAAAAElFTkSuQmCC);
+          width: 24px;
+          height: 24px;
+          margin-right: 4px;
+          text-align: center;
+      }
+
+      img.changed-icon {
+          content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQ1SURBVEhLhVZtbJRFEH7mri0fZwkqtqFi/SFQtPpDbDWN2mCs0hDjJ201fsQ/mvgaKWgkkUT0l4JGCTVctAqiMRGEgCEYkRREU5GALUGxocSEWIJREIsFLL32bnxm972e1+srT7LZmdm9md3ZZ+Y9wUWQDnAlN9VQrOY8zWwKnALkcAboLkrqCbNFITJAJkAdF1spzueY6oyFOMNgX3KsiidxILTloSBAKpCJRdCVXHiOam5dYsDEKV6+MMBr8Pw5pBlkdRqyrDipQ6HNIS+ABijjtJnjdmcwVDVA5zYBV9dCSsstPcDA70DfD5CujcDR3W6bgWu7RiAPlST179CUCzASyKQ4dCfF25yhrAra3Aa59m6nRkF/3gHZzEyePOp1oCMDuYdv427Ce3vEoG9w8s5n1kNf+O6izg1S3Qh9vhN6jf8pT9xAX685hXAB+KC3cuFZZymfA316K+SSy50aiX0fAe0PAoMDTN0VwFNbeOvZbom+Wumz1mQXgIYlfuIVm9+BJC4zMRqpf4Dty4HTx4CSyc5kQXThaicTcY7FJsTI86s432UKrmuEzGlw4v+isx3o7wPuZ1bjRaGRQZguzLrDyxJbkA5keozHvpm645/ObbHJQdXxhSzZA+xdC3y/3o89a3j6l4Hp1cD507zNoN8XQmseDoXMVKEmzNUrDPIqYmT/SwchFdf7DVmsYBEf7wqVcbC8l+/mc2/Qvm7ISit8NUYtsze41K1MKAUS4zzsfSREUxvQkgTufZ0pKQFm3EidN3nsQ/56RrgxRClLKSxIESkbpWkkjKrzWNT1zwDn2ILSKeAJpqo+AOqeHH3kfITpjRfHLcAZpwydY07/cmIedq0C1j0CvEdK7qY8bSZL6S1g/ePApww69jdnT3pfBJ/xlAXocVpm2JV/AQ5tBbo2AD9ytpP9+Quw/2PgwCd8/A8KA5iPbJ9Kpw4JqVTJyvuJ6hRULwCCL/xiFv3HgWP7gLXNQO2jrNMXvd1YVsT3KK8i2Y32IdrI+N4Ork0YzIwMzXI2NrktHKqBaKb3azJ0DN5vUm2dpNp/IjSMj0zPV/RhfjgWJz433+6ReZa3bTZJNi2CsvxHYXVwcBNLcSm/ChWhsRDKVMlni0JNVFPnV5jkAsSS6GSQd03Gb8zWupZckDTfpupOz5oIOOftD7CjsiZMh7bRJ/PKUM5CDAcymUXP5GmdM1TcACX/ZfY8p0ZBj3Tw5KTxH0dCC74ZhjTym3DBlNEABlZ1GXvINrLgFm/hMvuT3sQWUlnDJmiFyPNZi/iVbOneCOnZ4bd6fMuxUJL2zfbIC2Bg80vQ+CYHSf4fxIpZoax2Y4/x3GidA41Yw0/mUn5o8ppTQYAseBv7gizhjebzRglvHQs5S987jSTM+d7QmIfIAFnwRpXcZCmzvy2+6wL2zT3MsZ+OWShRAP4F6OKU+1jQJUAAAAAASUVORK5CYII=);
+          width: 24px;
+          height: 24px;
+          margin-right: 4px;
+          text-align: center;
+      }
+
+      img.unchanged-icon {
+          content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAASKSURBVEhLnVZrTFN3FD//e/ugIK0FqsBk8TFjWBlSYc8Yg8viB5g6p1On2UO3LNkHzD7M7INhF4rGZMtiZrYs4cPWZItsSgxjRhZNdJJsZkQUcVVhQxjjNddSCoXS9vb+d86/DyBQnPslN/e87jn3/M/jXgYPgF6xZakQKUHDxzXQbCSTQfePBLJbzw03p5yDo8IwBVIGkBRrEQftEAfYCsBz4+JZYPTwCN6bJK47GXV67sQVczAvwGPVT0k9UreCzj9A1hiTYiaSTjPpTSGNazwYCRqjXJPjKgQLYrjjZjX7qP9YD77TDOYGUMyZaNjAgVcSKzOJb1tXwXfbX5YcecVgS88Getoz5YUbw53wdee3oZbfLxhQJvwwkM5atWX7R+u6p4knJANYq9fIY5KnGZ1XEF+a54DPKj6GZwqeFPpU+KX/V3i7uWrqjqcrnXgKYtasu/x1vSKTZJqhzZoTnb9FdOXaLXB+fyOsylopdIuhwLIC3li/T391oC3QN9ZvwHoVhtl0FK6EWkkvMpCUrGIO6jUMqS/Ld0DrgRbA8ybVf0YgNAml9Zsmur1/ZCIblEG/IVrrvSuREgv6HjnHQsLnFZ88tHPCEmMGfLX9C6yhKJNJg+ghkjNZycnRQL2NQWy77Tvgu1dcJIfhiRHoGLk1U6Q5mJHisYIjtxhyM5cL/nnXVu/lvtZstBnSQ5pdh5E2kHNS7rHvFEaEvY0HofXPn+Pc4nhh9Wa4+HqToA86XkvDAEjxfBXCDjwiXkQKky6Nl+Q+QaTAxkefhQLzI7DaujJ5rbGuSl4JGdk8V/B0/CmAsvySDIkxNcZpdsaUpUcxgyO29Bytq6pdspqWxnSIkBqKU4vDqEvOI3gmvVBwonBiWg1RsetEkeMQfTsbYhk8AAvZSExK+tXh5SMiEA5IY9N+SGSgXD4Oro5vQIedlSoQFVjVVHin9AAc2fS+kHmDo5R5GtE4dPcp0m1iguo0o65J4FLvT9DvH4B7vj7o8fUueJGObC71ipkSIB+JPYUB3EynLLOpEHLj+9j2Fu2Ehl1fCsPB8SE0/k28PcMEYlnETnH2WeLyE22ab84T/EsNr0a+7zqvR3IEh80uhFhoFy46bnBm8/bBDv5/cbW/jUs1lij5YoqlnnyLYuDH4wTeIuFoBKpaDkNYDZP4oTAVnoI3m94d1zgnn7hN2UmSi7PiV4J/s3ITbkO+8a/xQej29sD2dRUgS7NW/iLA7wO8eGrP+LXhG2biGcjHeO3YaaKT7WTly6vxnH8k+rT7LJS7KuH60E2hWwxtA+1QVl8ewOmNO2c/rOBrnUKJmNN/TLGacejOYCZbiMflx3cUbgMsPqMpt6ZZRGv6gn7RLaduNapNd5sl7Brxouj8HN728Vr/BPGEeQ1u+DBPH2HBGgx0GFnqBgGjbFAzDBl4xJxPRiZlrBfNUAJhdP7REi27ZqLuXjQuE1h4ghCykrUe/yJwjdPnk4tlOB/sPjo4h/3+qVbr64wL5yBlgATwtwXnJFKKpB2zspAMHfrwjd14v44fFQ/JFgbAv0mvAHn/wmt6AAAAAElFTkSuQmCC);
+          width: 24px;
+          height: 24px;
+          margin-right: 4px;
+          text-align: center;
+      }
+
+      img.deleted-icon {
+          content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARFSURBVEhLjVVbbFRlEP727AVtYUuwi20paYtoqBtXjJu0zSoFDGgaIbQQHsDEhPTFNJgoCZcXtgWpCcGmD6YBxfCAJQq2IV7SKOWhNHa5mBK2IKLpSuw2Uiq9bGnd7uUcZ2bPWXa729gv+bMz85+d+f+Zb+Y34X/QaIJT0+Ah0UnLIUZglNaAyQRfo4Y7CVN2zBuAHG8lxx+QyM6tYsxElNYVCvQJBepKmNKREeDjvCXPRGbCp9RodLtuSkKxJuLQnvzOQbui4H2vijFdF6QF+GiR7XmYLT9GZ2bKdBMK1q7FmtpaFFdWwr5ihdhCw8MIXr2Kux0dGPH7xabjpmLCFq+GYV1/EuAz96uFjwYDv4THx4tYX1xQgE3Hj8O1ezdMdLRsiNNNBs6dw6UDBzA9MqJb0U+fbzJuYhYTYYPV1jX94AEXEg6nE+92d6N0/XqYKMHzQTGb5YbldMPA5cuYGeXao5BqV9wDdLIi/25dVfbOeODPsywvLixEfV8flpaWsrpgjA0O4guPJ3kTOlcNF15usMFsaae8L2f57ZMnUbJuHYuCIZ8PQxQwGg7DXiTZw+zUFP7o6sJ4ICAH4Zs8vWwZch0O/HbxonxDeJZucZbp6GpUlLgX0E653Zqqqloqvm9o0Hiv2W7XxgIBsf20f7/YTns8ad/HIhGtzeWSPVph8r1G4Sair6SKL+7Ykcw5fS+/rx86hJz8fMyGQug7cQKTwSButLXJ3hvHjqXVyEw0Lt+eZPcicvEaO3YldAgVDRh/ZGpW7dsnsr+9HR27diHy+DGcO3eitLpa7KkorqjQJcFLHCCPJbPNhtzlUoYMVOzdi/zycsxOTuKv3l5Yc3NR7aUkZMESOpBisegaHOkEn4eS1pwcPJUn5xBwUflACwEHCLEQj0Qw/fAhixm4eeaMdC7XwqhHz5Ej+m46pqjL1VhM1zDKAZLTMEiUnIt/JyZw5ehRkasPH5bFGKB6MIXnInjtmi4JBhTKSg+lJs7a3c7OJHsM9DY3Y+L+feSVlOCVPXtksUzMQ/fBgyCa6l8S80gmH4aDKPn2KdRtfpo1N9gyfP06fr1wQXYZcboqM6Zs40a82dICGxWX11utrXhu82ZJV8oMEpaN3LplFPJnfitEabKY69RYvINl+8qVqKerG5NzoeCu/ryyMk7zSKYDnX4rBfhOWOSNxTuJWt+yHBoawtd1dTKSFwpO4Zc1NTHDOeErds7CE5qqsXpK1e8scqpOV1XhzvnzGTVJBe9xWmjERB7du2eQ/zaN6wZdTn9wmkxYrWr4gcQXEhagyO2WEVJMAaURySnTmWlLB1D/7u9P7aXb9OBsowdnUNczn8wmBQVEhk9JzHgyjebinsmCb+jk79FD84+uC7K3LoEmYS0d9kMSq2glH6Y54I7yUUFbKOfJOZ2KeQMYoEAvUyB+IPi1s4sRmKTlJ8dMxbRHOR3Af7EWv1HmuKqoAAAAAElFTkSuQmCC);
+          width: 24px;
+          height: 24px;
+          margin-right: 4px;
+          text-align: center;
+      }
+
+      .dbc-item {
+          margin-top: 12px;
+      }
+
+      .dbc-versions {
+          font-size: 9pt;
+      }
+
+  </style>
+</head>
+<body>
+
+<h1>DBC Diff Report</h1>
+<p>
+<h2>{{ build_info }}</h2>
+{% if dbc_files.items() | length > 0 %}
+  <ol>
+    {% for dbc_file_name, dbc_file_data in dbc_files.items() %}
+      {% set dbc_action = dbc_file_data['action'] %}
+      <li>
+        <!-- <a href="#{{ dbc_file_name }}"><span class="dbc-name"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</span></a> //-->
+        {% if dbc_action == 'changed' %}
+        <div class="dbc-name"><a href="#{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+        <div class="dbc-versions">versions: {{ dbc_file_data["old_version"] }} > {{ dbc_file_data["new_version"] }}</div>
+        {% elif dbc_action == 'added' %}
+        <div class="dbc-name"><a href="#{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+        <div class="dbc-versions">version: {{ dbc_file_data["new_version"] }}</div>
+        {% elif dbc_action == 'deleted' %}
+        <div class="dbc-name"><a href="#{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+        <div class="dbc-versions">version: {{ dbc_file_data["old_version"] }}</div>
+        {% else %}
+        <div class="dbc-name"><a href="#{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+        <div class="dbc-versions">version: {{ dbc_file_data["new_version"] }}</div>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+{% else %}
+  <p>No changed detected</p>
+{% endif %}
+</p>
+
+<br/>
+
+{% set ns = namespace(id = 0) %}
+{% for dbc_file_name, dbc_file_data in dbc_files.items() %}
+  {% set dbc_action = dbc_file_data['action'] %}
+  {% set ns.id = ns.id + 1 %}
+  <p class="dbc-item">
+    {% if dbc_action == 'changed' %}
+      <div class="dbc-name" id="{{ dbc_file_name }}"><a id="{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+    <div class="dbc-versions">versions: {{ dbc_file_data["old_version"] }} > {{ dbc_file_data["new_version"] }}</div>
+    {% elif dbc_action == 'added' %}
+    <div class="dbc-name" id="{{ dbc_file_name }}"><a id="{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+    <div class="dbc-versions">version: {{ dbc_file_data["new_version"] }}</div>
+    {% elif dbc_action == 'deleted' %}
+    <div class="dbc-name" id="{{ dbc_file_name }}"><a id="{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+    <div class="dbc-versions">version: {{ dbc_file_data["old_version"] }}</div>
+    {% else %}
+    <div class="dbc-name" id="{{ dbc_file_name }}"><a id="{{ dbc_file_name }}"><img class="{{ dbc_action | lower }}-icon" alt="{{ dbc_action }}" align="center"/>{{ dbc_file_name }}</a></div>
+    <div class="dbc-versions">version: {{ dbc_file_data["new_version"] }}</div>
+    {% endif %}
+
+  <div id="div{{ ns.id }}" class="data-indent">
+    {% for message_name, message_data in dbc_file_data[dbc_action].items() %}
+      {% set message_action = message_data['action'] %}
+
+      <div class="container">
+        <div class="box-{{ message_action | lower }}">
+          <table class="box-table">
+            <tr class="{{ message_action | lower }} header-item">
+              <td colspan="3"><img class="{{ message_action | lower }}-icon" align="center"/>message:
+                <b>{{ message_name }}</b></td>
+            </tr>
+
+            <!-- message properties -->
+            {% if message_data[message_action] | length > 0 %}
+              {% if message_action == 'added' %}
+                <tr class="header-properties">
+                  <td>name</td>
+                  <td colspan="2">value</td>
+                </tr>
+              {% elif message_action == 'deleted' %}
+                <tr class="header-properties">
+                  <td>name</td>
+                  <td colspan="2">value</td>
+                </tr>
+              {% else %}
+                <tr class="header-properties">
+                  <td>name</td>
+                  <td>old value</td>
+                  <td>new value</td>
+                </tr>
+              {% endif %}
+
+              {% for message_property in message_data[message_action] %}
+                {% if message_action == 'added' %}
+                  <tr>
+                    <td class="property-name">{{ message_property['name'] }}</td>
+                    <td colspan="2" class="property-value">{{ message_property['new'] }}</td>
+                  </tr>
+                {% elif message_action == 'deleted' %}
+                  <tr>
+                    <td class="property-name">{{ message_property['name'] }}</td>
+                    <td colspan="2" class="property-value">{{ message_property['old'] }}</td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td class="property-name">{{ message_property['name'] }}</td>
+                    <td class="property-value">{{ message_property['old'] }}</td>
+                    <td class="property-value">{{ message_property['new'] }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+
+            {% else %}
+              <tr class="header-properties">
+                <td colspan="3">no changes in message properties</td>
+              </tr>
+            {% endif %}
+          </table>
+        </div>
+
+        <!-- message signals -->
+        {% for message_signal, signal_data in message_data['signals'].items() %}
+          {% set signal_action = signal_data['action'] %}
+
+          <div class="box-{{ signal_action | lower }}">
+            <table class="box-table">
+              <tr class="{{ signal_action | lower }} header-item">
+                <td colspan="3"><img class="{{ signal_action | lower }}-icon" align="center"/>signal:
+                  <b>{{ message_signal }}</b></td>
+              </tr>
+
+              {% if signal_action == 'added' %}
+                <tr class="header-properties">
+                  <td>name</td>
+                  <td colspan="2">value</td>
+                </tr>
+              {% elif signal_action == 'deleted' %}
+                <tr class="header-properties">
+                  <td>name</td>
+                  <td colspan="2">value</td>
+                </tr>
+              {% else %}
+                <tr class="header-properties">
+                  <td>name</td>
+                  <td>old value</td>
+                  <td>new value</td>
+                </tr>
+              {% endif %}
+
+              {% for signal_property in signal_data[signal_action] %}
+                <tr>
+                  {% if signal_property['name'] == 'choices' %}
+                    {% if signal_action == 'added' %}
+                      <td class="property-name">{{ signal_property['name'] }}</td>
+                      <td colspan="2" class="property-value">
+                      {% if signal_property['new'] is not none %}
+                      {% for value, name in signal_property['new'].items() %}
+                        <b>{{ value }}</b>:&nbsp;{{ name }}<br/>
+                      {% endfor %}
+                      {% else %}
+                        <b>---</b>
+                      {% endif %}
+                      </td>
+                    {% elif signal_action == 'deleted' %}
+                      <td class="property-name">{{ signal_property['name'] }}</td>
+                      <td colspan="2" class="property-value">
+                      {% if signal_property['old'] is not none %}
+                      {% for value, name in signal_property['old'].items()  %}
+                        <b>{{ value }}</b>:&nbsp;{{ name }}<br/>
+                      {% endfor %}
+                      {% else %}
+                        <b>---</b>
+                      {% endif %}
+                      </td>
+                    {% else %}
+                      <td class="property-name">{{ signal_property['name'] }}</td>
+                      <td class="property-value">
+                      {% if signal_property['old'] is not none %}
+                      {% for value, name in signal_property['old'].items()  %}
+                        <b>{{ value }}</b>:&nbsp;{{ name }}<br/>
+                      {% endfor %}
+                      {% else %}
+                        <b>---</b>
+                      {% endif %}
+                      </td>
+                      <td class="property-value">
+                      {% if signal_property['new'] is not none %}
+                      {% for value, name in signal_property['new'].items()  %}
+                        <b>{{ value }}</b>:&nbsp;{{ name }}<br/>
+                      {% endfor %}
+                      {% else %}
+                        <b>---</b>
+                      {% endif %}
+                      </td>
+                    {% endif %}
+
+
+                  {% else %}
+                    {% if signal_action == 'added' %}
+                      <td class="property-name">{{ signal_property['name'] }}</td>
+                      <td colspan="2" class="property-value">{{ signal_property['new'] }}</td>
+                    {% elif signal_action == 'deleted' %}
+                      <td class="property-name">{{ signal_property['name'] }}</td>
+                      <td colspan="2" class="property-value">{{ signal_property['old'] }}</td>
+                    {% else %}
+                      <td class="property-name">{{ signal_property['name'] }}</td>
+                      <td class="property-value">{{ signal_property['old'] }}</td>
+                      <td class="property-value">{{ signal_property['new'] }}</td>
+                    {% endif %}
+
+                  {% endif %}
+                </tr>
+
+              {% endfor %}
+            </table>
+          </div>
+
+
+        {% endfor %}
+
+      </div>
+    {% endfor %}
+
+  </div>
+  </p>
+{% endfor %}
+
+
+</body>
+</html>
