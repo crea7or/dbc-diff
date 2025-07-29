@@ -43,6 +43,9 @@ Example:
 python dbcdiff.py -f ./old_dbcs -t ./new_dbcs -r html,json -i "Release v1.0 vs v2.0"
 ```
 
+
+![image](https://github.com/crea7or/dbc-diff/blob/master/dbcdiff.png)
+
 MIT License Copyright (c) 2022 pavel.sokolov@gmail.com / CEZEO software Ltd.. All rights reserved.
 
 ```
