@@ -301,7 +301,7 @@ def main(old: str, new: str, unchanged: bool, reports: str, info: str, name: str
     elif os.path.isfile(new):
         new_file_name = os.path.basename(new)
         # compare different filenames need a fix
-        if old_file_name != new_file_name:
+        if old_file_name is not None and old_file_name != new_file_name:
             new_file_name = old_file_name + ' -> ' + new_file_name
             old_files[new_file_name] = old_files.pop(old_file_name)
         new_files = {new_file_name: new}
